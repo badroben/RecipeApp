@@ -15,8 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.outlined.FavoriteBorder
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -24,12 +24,16 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,24 +48,25 @@ import com.example.recipeapp.data.local.entity.RecipeEntity
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecipesScreen(
-    onHomeButtonClicked: () -> Unit,
     onRecipeClick: (RecipeEntity) -> Unit,
-    viewModel: RecipeViewModel = hiltViewModel()
+    onBackClicked: () -> Unit,
+    viewModel: RecipesViewModel = hiltViewModel()
 ) {
-    val recipes by viewModel.recipes.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
+    var isSearching by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
-            CenterAlignedTopAppBar(
-                title = { Text("Recipes", style = MaterialTheme.typography.headlineMedium) },
-                navigationIcon = {
-                    IconButton(onClick = onHomeButtonClicked) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go Back")
-                    }
+            SearchableTopBar(
+                title = "Recipes",
+                searchQuery = uiState.searchQuery,
+                onSearchQueryChange = viewModel::onSearchQueryChange,
+                isSearching = isSearching,
+                onSearchToggle = {
+                    isSearching = !isSearching
+                    if (!isSearching) viewModel.onSearchQueryChange("")
                 },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
-                )
+                onBackClicked = onBackClicked
             )
         }
     ) { innerPadding ->
@@ -69,10 +74,9 @@ fun RecipesScreen(
             contentPadding = innerPadding,
             modifier = Modifier.fillMaxSize().padding(horizontal = 16.dp)
         ) {
-            items(recipes.size) { index ->
-                val recipe = recipes[index]
+            items(uiState.recipes.size) { index ->
                 RecipeCard(
-                    recipe = recipe,
+                    recipe = uiState.recipes[index],
                     onRecipeClick = onRecipeClick
                 )
             }
@@ -116,12 +120,50 @@ fun RecipeCard(
                     modifier = Modifier.fillMaxSize()
                 )
             }
-//            IconButton(onClick = onFavoriteClick) {
-//                Icon(
-//                    imageVector = if (recipe.isFavourite) Icons.Filled.Favorite else Icons.Outlined.FavoriteBorder,
-//                    contentDescription = "Toggle favorite"
-//                )
-//            }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SearchableTopBar(
+    title: String,
+    searchQuery: String,
+    onSearchQueryChange: (String) -> Unit,
+    isSearching: Boolean,
+    onSearchToggle: () -> Unit,
+    onBackClicked: () -> Unit
+) {
+    CenterAlignedTopAppBar(
+        title = {
+            if (isSearching) {
+                OutlinedTextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChange,
+                    placeholder = { Text("Search recipes...") },
+                    singleLine = true,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            } else {
+                Text(text = title, style = MaterialTheme.typography.headlineMedium)
+            }
+        },
+        navigationIcon = {
+            IconButton(onClick = onBackClicked) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Go Back")
+            }
+        },
+        actions = {
+            IconButton(onClick = onSearchToggle) {
+                Icon(
+                    imageVector = if (isSearching) Icons.Default.Close else Icons.Default.Search,
+                    contentDescription = if (isSearching) "Close search" else "Search"
+                )
+            }
+        },
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+            titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer
+        )
+    )
 }

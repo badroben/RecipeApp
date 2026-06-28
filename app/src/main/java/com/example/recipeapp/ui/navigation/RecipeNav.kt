@@ -11,12 +11,15 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
-import com.example.recipeapp.ui.feature.recipes.RecipeViewModel
+import com.example.recipeapp.ui.feature.recipes.RecipesViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Modifier.Companion.any
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.ui.feature.favourites.FavouritesScreen
+import com.example.recipeapp.ui.feature.favourites.FavouritesViewModel
 import com.example.recipeapp.ui.feature.home.HomeScreen
 import com.example.recipeapp.ui.feature.recipeDetails.RecipeDetailsScreen
 import com.example.recipeapp.ui.feature.recipes.RecipesScreen
@@ -26,7 +29,8 @@ import com.example.recipeapp.ui.feature.recipes.RecipesScreen
 fun AppNavGraph(
     navController: NavHostController,
     modifier: Modifier = Modifier,
-    viewModel: RecipeViewModel = hiltViewModel()
+    recipesViewModel: RecipesViewModel = hiltViewModel(),
+    favouritesViewModel: FavouritesViewModel = hiltViewModel()
 ){
     NavHost(
         navController = navController,
@@ -86,9 +90,7 @@ fun AppNavGraph(
             route = Routes.Recipes.route
         ) {
             RecipesScreen(
-                onHomeButtonClicked = {
-                    navController.popBackStack(Routes.Home.route, inclusive = false)
-                },
+                onBackClicked = {navController.popBackStack()},
                 onRecipeClick = { recipe ->
                     navController.navigate(Routes.RecipeDetails.createRoute(recipe.id))
                 }
@@ -105,22 +107,20 @@ fun AppNavGraph(
             })
         )
         { backStackEntry ->
-            // 1. Safe Argument Extraction
+
             val recipeId = backStackEntry.arguments?.getInt(Routes.RecipeDetails.ARG_RECIPE_ID)
-            val recipes by viewModel.recipes.collectAsState()
-            val recipe = recipes.find { it.id == recipeId }
+            val uiState by recipesViewModel.uiState.collectAsState()
+            val favUiState by favouritesViewModel.uiState.collectAsState()
+            val recipe = uiState.recipes.find { it.id == recipeId }
+            val isFavourite = recipe != null && favUiState.favourites.any { it.id == recipe.id }
 
-            // 2. State Collection (Efficient)
-            val uiState by viewModel.uiState.collectAsState()
-            val isFavourite = recipe != null && uiState.favourites.any { it.id == recipe.id }
-
-            // 3. Null Safety Check
+            // Null Safety Check
             if (recipe != null) {
                 RecipeDetailsScreen(
                     recipe = recipe,
                     isFavourite = isFavourite,
-                    onAddToFavouritesClicked = { viewModel.toggleFavourite(recipe) },
-                    onRemoveFromFavouritesClicked = { viewModel.toggleFavourite(recipe) },
+                    onAddToFavouritesClicked = { favouritesViewModel.toggleFavourite(recipe) },
+                    onRemoveFromFavouritesClicked = { favouritesViewModel.toggleFavourite(recipe) },
                     onHomeButtonClicked = {
                         navController.popBackStack(Routes.Home.route, inclusive = false)
                     },
@@ -142,7 +142,8 @@ fun AppNavGraph(
                 },
                 onRecipeClick = { recipe ->
                     navController.navigate(Routes.RecipeDetails.createRoute(recipe.id))
-                }
+                },
+                onBackClicked = {navController.popBackStack()}
             )
         }
     }
