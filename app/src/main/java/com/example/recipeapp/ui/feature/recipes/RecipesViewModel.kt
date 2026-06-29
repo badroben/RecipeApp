@@ -51,4 +51,30 @@ class RecipesViewModel @Inject constructor(
             repository.toggleFavourite(recipe.id, !recipe.isFavourite)
         }
     }
+
+    fun addRecipe(title: String, description: String, ingredients: List<String>, image: Int){
+        viewModelScope.launch {
+            repository.addRecipe(
+                RecipeEntity(
+                    title = title,
+                    description = description,
+                    ingredients = ingredients,
+                    image = image,
+                    isFavourite = false
+                )
+            )
+        }
+    }
+
+    fun deleteRecipe(recipe: RecipeEntity){
+        viewModelScope.launch {
+            repository.deleteRecipe(recipe)
+        }
+    }
+
+    fun updateRecipe(recipe: RecipeEntity){
+        viewModelScope.launch {
+            repository.updateRecipe(recipe)
+        }
+    }
 }

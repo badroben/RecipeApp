@@ -12,6 +12,9 @@ class RecipeRepositoryImpl @Inject constructor(
 ) : RecipeRepository {
     override fun getAllRecipes(): Flow<List<RecipeEntity>> = dao.getAllRecipes()
     override fun getFavouriteRecipes(): Flow<List<RecipeEntity>> = dao.getFavouriteRecipes()
+    override suspend fun addRecipe(recipe: RecipeEntity) {dao.insertRecipe(recipe)}
+    override suspend fun deleteRecipe(recipe: RecipeEntity) {dao.deleteRecipe(recipe)}
+    override suspend fun updateRecipe(recipe: RecipeEntity) {dao.updateRecipe(recipe)}
     override suspend fun toggleFavourite(recipeId: Int, isFavourite: Boolean) =
         dao.updateFavourite(recipeId, isFavourite)
 }

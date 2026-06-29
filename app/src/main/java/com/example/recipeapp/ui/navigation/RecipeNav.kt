@@ -14,6 +14,8 @@ import androidx.navigation.navArgument
 import com.example.recipeapp.ui.feature.recipes.RecipesViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier.Companion.any
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,8 +23,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.ui.feature.favourites.FavouritesScreen
 import com.example.recipeapp.ui.feature.favourites.FavouritesViewModel
 import com.example.recipeapp.ui.feature.home.HomeScreen
+import com.example.recipeapp.ui.feature.insert.AddEditRecipeScreen
 import com.example.recipeapp.ui.feature.recipeDetails.RecipeDetailsScreen
 import com.example.recipeapp.ui.feature.recipes.RecipesScreen
+import com.example.recipeapp.R
 
 
 @Composable
@@ -93,6 +97,9 @@ fun AppNavGraph(
                 onBackClicked = {navController.popBackStack()},
                 onRecipeClick = { recipe ->
                     navController.navigate(Routes.RecipeDetails.createRoute(recipe.id))
+                },
+                onAddRecipeClicked = {
+                    navController.navigate(Routes.AddEditRecipe.createAddRoute())
                 }
             )
         }
@@ -125,7 +132,14 @@ fun AppNavGraph(
                         navController.popBackStack(Routes.Home.route, inclusive = false)
                     },
                     onFavouriteClicked = { navController.navigate(Routes.Favourites.route) },
-                    onBackClicked = {navController.popBackStack()}
+                    onBackClicked = {navController.popBackStack()},
+                    onEditClicked = {
+                        navController.navigate(Routes.AddEditRecipe.createEditRoute(recipe.id))
+                    },
+                    onDeleteClicked = {
+                        recipesViewModel.deleteRecipe(recipe)
+                        navController.popBackStack()
+                    }
                 )
             } else {
                 // Fallback for errors
@@ -144,6 +158,37 @@ fun AppNavGraph(
                     navController.navigate(Routes.RecipeDetails.createRoute(recipe.id))
                 },
                 onBackClicked = {navController.popBackStack()}
+            )
+        }
+        // ----------------------------
+        // ADD AND EDIT SCREEN
+        // ----------------------------
+        composable(
+            route = Routes.AddEditRecipe.route,
+            arguments = listOf(
+                navArgument("recipeId") {
+                    type = NavType.IntType
+                    defaultValue = -1   // sentinel for "no ID = adding new"
+                }
+            )
+        ) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getInt(Routes.AddEditRecipe.ARG_RECIPE_ID) ?: -1
+            val uiState by recipesViewModel.uiState.collectAsState()
+            val existingRecipe = if (recipeId != -1) uiState.recipes.find { it.id == recipeId } else null
+
+            AddEditRecipeScreen(
+                existingRecipe = existingRecipe,
+                onSave = { title, description, ingredients ->
+                    if (existingRecipe == null) {
+                        recipesViewModel.addRecipe(title, description, ingredients, image = R.drawable.place_holder)
+                    } else {
+                        recipesViewModel.updateRecipe(
+                            existingRecipe.copy(title = title, description = description, ingredients = ingredients)
+                        )
+                    }
+                    navController.popBackStack()
+                },
+                onBackClicked = { navController.popBackStack() }
             )
         }
     }

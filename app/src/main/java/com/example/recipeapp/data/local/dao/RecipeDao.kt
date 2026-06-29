@@ -1,14 +1,26 @@
 package com.example.recipeapp.data.local.dao
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Update
 import com.example.recipeapp.data.local.entity.RecipeEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface RecipeDao {
+
+    @Insert
+    suspend fun insertRecipe(recipe: RecipeEntity): Long
+
+    @Update
+    suspend fun updateRecipe(recipe: RecipeEntity)
+
+    @Delete
+    suspend fun deleteRecipe(recipe: RecipeEntity)
+
     @Insert(onConflict = OnConflictStrategy.IGNORE)
     suspend fun insertAll(recipes: List<RecipeEntity>)
 

@@ -13,4 +13,10 @@ sealed class Routes(val route: String) {
         // Helper to build the route with the ID
         fun createRoute(id: Int) = "recipe_details/$id"
     }
+
+    object AddEditRecipe : Routes("add_edit_recipe?recipeId={recipeId}"){
+        const val ARG_RECIPE_ID = "recipeId"
+        fun createAddRoute() = "add_edit_recipe?recipeId=-1"
+        fun createEditRoute(id: Int) = "add_edit_recipe?recipeId=$id"
+    }
 }
