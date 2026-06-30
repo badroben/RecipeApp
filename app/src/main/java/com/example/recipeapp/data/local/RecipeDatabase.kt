@@ -6,7 +6,7 @@ import androidx.room.TypeConverters
 import com.example.recipeapp.data.local.dao.RecipeDao
 import com.example.recipeapp.data.local.entity.RecipeEntity
 
-@Database(entities = [RecipeEntity::class], version = 2, exportSchema = false)
+@Database(entities = [RecipeEntity::class], version = 5, exportSchema = false)
 @TypeConverters(Converters::class)
 abstract class RecipeDatabase : RoomDatabase() {
 

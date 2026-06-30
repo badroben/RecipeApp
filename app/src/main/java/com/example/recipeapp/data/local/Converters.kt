@@ -1,6 +1,7 @@
 package com.example.recipeapp.data.local
 
 import androidx.room.TypeConverter
+import com.example.recipeapp.domain.model.Category
 
 class Converters {
     @TypeConverter
@@ -11,5 +12,15 @@ class Converters {
     @TypeConverter
     fun fromList(list: List<String>): String {
         return list.joinToString(",")
+    }
+
+    @TypeConverter
+    fun fromCategory(category: Category): String {
+        return category.name
+    }
+
+    @TypeConverter
+    fun toCategory(value: String): Category {
+        return Category.valueOf(value)
     }
 }

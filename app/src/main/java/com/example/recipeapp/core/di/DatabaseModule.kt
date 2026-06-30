@@ -17,6 +17,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import javax.inject.Singleton
 import kotlin.jvm.java
+import javax.inject.Provider
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -25,10 +26,10 @@ object DatabaseModule {
     @Provides
     @Singleton
     fun provideDatabase(
-        @ApplicationContext context: Context
+        @ApplicationContext context: Context,
+        recipeDaoProvider: Provider<RecipeDao>
     ): RecipeDatabase {
-        lateinit var instance: RecipeDatabase
-        instance = Room.databaseBuilder(
+        return Room.databaseBuilder(
             context,
             RecipeDatabase::class.java,
             "recipe_database"
@@ -38,12 +39,11 @@ object DatabaseModule {
                 override fun onCreate(db: SupportSQLiteDatabase) {
                     super.onCreate(db)
                     CoroutineScope(Dispatchers.IO).launch {
-                        instance.recipeDao().insertAll(InitialRecipes.list)
+                        recipeDaoProvider.get().insertAll(InitialRecipes.list)
                     }
                 }
             })
             .build()
-        return instance
     }
 
     @Provides

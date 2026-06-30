@@ -2,6 +2,7 @@ package com.example.recipeapp.data.local
 
 import com.example.recipeapp.R
 import com.example.recipeapp.data.local.entity.RecipeEntity
+import com.example.recipeapp.domain.model.Category
 
 object InitialRecipes {
     val list = listOf(
@@ -19,6 +20,9 @@ object InitialRecipes {
                 "Salt",
                 "Pepper"
             ),
+            cookingTime = 60,
+            category = Category.DINNER,
+            rating = 4,
             isFavourite = false,
             image = R.drawable.spaghetti
         ),
@@ -35,6 +39,9 @@ object InitialRecipes {
                 "Ginger",
                 "Salt"
             ),
+            cookingTime = 90,
+            category = Category.DINNER,
+            rating = 5,
             isFavourite = false,
             image = R.drawable.curry
         ),
@@ -50,6 +57,9 @@ object InitialRecipes {
                 "Garlic",
                 "Sesame oil"
             ),
+            cookingTime = 45,
+            category = Category.DINNER,
+            rating = 3,
             isFavourite = false,
             image = R.drawable.stir_fry
         ),
@@ -65,6 +75,9 @@ object InitialRecipes {
                 "Cheese",
                 "Tomatoes"
             ),
+            cookingTime = 40,
+            category = Category.DINNER,
+            rating = 4,
             isFavourite = false,
             image = R.drawable.tacos
         ),
@@ -81,6 +94,9 @@ object InitialRecipes {
                 "Baking powder",
                 "Salt"
             ),
+            cookingTime = 30,
+            category = Category.BREAKFAST,
+            rating = 5,
             isFavourite = false,
             image = R.drawable.pancakes
         ),
@@ -95,6 +111,9 @@ object InitialRecipes {
                 "Caesar dressing",
                 "Lemon"
             ),
+            cookingTime = 35,
+            category = Category.LUNCH,
+            rating = 4,
             isFavourite = false,
             image = R.drawable.caesar_salad
         ),
@@ -111,6 +130,9 @@ object InitialRecipes {
                 "Salt",
                 "Pepper"
             ),
+            cookingTime = 45,
+            category = Category.LUNCH,
+            rating = 2,
             isFavourite = false,
             image = R.drawable.tomato_soup
         ),
@@ -119,6 +141,9 @@ object InitialRecipes {
             title = "Grilled Cheese Sandwich",
             description = "A crispy, buttery sandwich with gooey melted cheese. Quick and satisfying.",
             ingredients = listOf("Bread", "Butter", "Cheese slices"),
+            cookingTime = 25,
+            category = Category.SNACK,
+            rating = 5,
             isFavourite = false,
             image = R.drawable.grilled_cheese
         ),
@@ -135,6 +160,9 @@ object InitialRecipes {
                 "Green onions",
                 "Oil"
             ),
+            cookingTime = 60,
+            category = Category.LUNCH,
+            rating = 4,
             isFavourite = false,
             image = R.drawable.fired_rice
         ),
@@ -152,6 +180,9 @@ object InitialRecipes {
                 "Baking soda",
                 "Salt"
             ),
+            cookingTime = 25,
+            category = Category.DESSERT,
+            rating = 5,
             isFavourite = false,
             image = R.drawable.cookies
         )

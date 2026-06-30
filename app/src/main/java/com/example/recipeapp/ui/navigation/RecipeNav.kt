@@ -14,12 +14,8 @@ import androidx.navigation.navArgument
 import com.example.recipeapp.ui.feature.recipes.RecipesViewModel
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.ui.Modifier.Companion.any
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.recipeapp.ui.feature.favourites.FavouritesScreen
 import com.example.recipeapp.ui.feature.favourites.FavouritesViewModel
 import com.example.recipeapp.ui.feature.home.HomeScreen
@@ -178,12 +174,12 @@ fun AppNavGraph(
 
             AddEditRecipeScreen(
                 existingRecipe = existingRecipe,
-                onSave = { title, description, ingredients ->
+                onSave = { title, description, ingredients, cookingTime, category, rating->
                     if (existingRecipe == null) {
-                        recipesViewModel.addRecipe(title, description, ingredients, image = R.drawable.place_holder)
+                        recipesViewModel.addRecipe(title, description, ingredients, cookingTime, category,rating, image = R.drawable.place_holder)
                     } else {
                         recipesViewModel.updateRecipe(
-                            existingRecipe.copy(title = title, description = description, ingredients = ingredients)
+                            existingRecipe.copy(title = title, description = description, ingredients = ingredients, cookingTime = cookingTime ,category = category, rating = rating)
                         )
                     }
                     navController.popBackStack()

@@ -3,12 +3,11 @@ package com.example.recipeapp.ui.feature.recipes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.recipeapp.data.local.entity.RecipeEntity
+import com.example.recipeapp.domain.model.Category
 import com.example.recipeapp.domain.repository.RecipeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
@@ -52,7 +51,7 @@ class RecipesViewModel @Inject constructor(
         }
     }
 
-    fun addRecipe(title: String, description: String, ingredients: List<String>, image: Int){
+    fun addRecipe(title: String, description: String, ingredients: List<String>, cookingTime: Int, category : Category, rating: Int, image: Int){
         viewModelScope.launch {
             repository.addRecipe(
                 RecipeEntity(
@@ -60,6 +59,9 @@ class RecipesViewModel @Inject constructor(
                     description = description,
                     ingredients = ingredients,
                     image = image,
+                    cookingTime = cookingTime,
+                    category = category,
+                    rating = rating,
                     isFavourite = false
                 )
             )
